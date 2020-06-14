@@ -1,0 +1,2 @@
+# Camila-bot
+🤦‍♀️ Calendar and task management Discord bot
