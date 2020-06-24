@@ -1,2 +1,5 @@
 [Discord]
 BotToken = 
+
+[Database]
+Path = data/camila.sqlite

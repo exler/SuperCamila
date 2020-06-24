@@ -13,16 +13,16 @@ def now() -> str:
 
 
 def error(message: str):
-    print(f"{Colors.RED}{now()} [Camila-bot] {message}{Colors.END}")
+    print(f"{Colors.RED}{now()} [CamilaBot] {message}{Colors.END}")
 
 
 def warn(message: str):
-    print(f"{Colors.YELLOW}{now()} [Camila-bot] {message}{Colors.END}")
+    print(f"{Colors.YELLOW}{now()} [CamilaBot] {message}{Colors.END}")
 
 
 def info(message: str):
-    print(f"{Colors.BLUE}{now()} [Camila-bot] {message}{Colors.END}")
+    print(f"{Colors.BLUE}{now()} [CamilaBot] {message}{Colors.END}")
 
 
 def debug(message: str):
-    print(f"{now()} [Camila-bot] {message}")
+    print(f"{now()} [CamilaBot] {message}")
