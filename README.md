@@ -10,15 +10,9 @@
 ## Usage
 * Create a new bot on [Discord Developer Portal](https://discord.com/developers/applications) and generate a bot token
 * Rename `config.ini.example` to `config.ini` and fill out the empty fields
-
-* Install dependencies
+* Run the installation script to setup dependencies and install `pm2` for process management
 ```bash
-$ pip install -r requirements.txt
-```
-
-* Run the bot
-```bash
-$ python camila.py
+$ sudo ./setup.sh
 ```
 
 ## Available commands
