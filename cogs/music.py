@@ -13,11 +13,14 @@ class Music(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.voice_channels = {}
 
-        for file in os.listdir("data"):
-            if file.endswith(".mp3"):
-                os.remove(f"data/{file}")
+        if os.path.isdir("data/audio"):
+            for file in os.listdir("data/audio"):
+                os.remove(f"data/audio/{file}")
+        os.makedirs("data/audio", exist_ok=True)
+
+        self.voice_channels = {}
+        self.voice_queues = {}
 
     @commands.command()
     async def join(self, ctx):
@@ -31,6 +34,7 @@ class Music(commands.Cog):
                 self.voice_channels[
                     ctx.message.guild.id
                 ] = await ctx.author.voice.channel.connect()
+                self.voice_queues[ctx.message.guild.id] = []
         else:
             await ctx.send("You are not in any voice channel!")
 
@@ -39,33 +43,69 @@ class Music(commands.Cog):
         """Play music from a YouTube video"""
         await self.join(ctx)
 
-        if web.url_validator(video):
-            web.youtube_download(video)
+        audio_info = web.youtube_download(video)
+        self.voice_queues[ctx.message.guild.id].append(audio_info)
 
-        self.voice_channels[ctx.message.guild.id].play(
-            discord.FFmpegPCMAudio("data/audio.mp3")
-        )
-
-    @commands.command()
-    async def skip(self, ctx):
-        """Skip the current playing video"""
-        pass
+        if len(self.voice_queues[ctx.message.guild.id]) == 1:
+            await ctx.send(f"▶️ Now playing: {audio_info['title']}")
+            self.queue(ctx.message.guild.id, 0)
+        elif len(self.voice_queues[ctx.message.guild.id]) > 1:
+            await ctx.send(
+                f"#️⃣ Added `{audio_info['title']}` to queue at position {len(self.voice_queues[ctx.message.guild.id]) - 1}"
+            )
 
     @commands.command(aliases=["stop"])
+    async def skip(self, ctx):
+        """Skip the current playing video"""
+        voice = self.voice_channels[ctx.message.guild.id]
+
+        if voice and voice.is_playing():
+            voice.stop()
+            await ctx.send("⏭ Audio skipped.")
+        else:
+            await ctx.send("Nothing to skip.")
+
+    @commands.command()
     async def pause(self, ctx):
         """Pause the current playing video"""
-        self.voice_channels[ctx.message.guild.id].pause()
+        voice = self.voice_channels[ctx.message.guild.id]
+
+        if voice and voice.is_playing():
+            voice.pause()
+            await ctx.send("⏸ Audio paused. To unpause write `!unpause`.")
+        else:
+            await ctx.send("Nothing to pause.")
 
     @commands.command(aliases=["resume"])
     async def unpause(self, ctx):
         """Unpause the currently paused video"""
-        self.voice_channels[ctx.message.guild.id].resume()
+        voice = self.voice_channels[ctx.message.guild.id]
+
+        if voice and voice.is_paused():
+            voice.resume()
+            await ctx.send("▶️ Audio unpaused.")
+        else:
+            await ctx.send("Nothing to unpause.")
 
     @commands.command()
     async def leave(self, ctx):
         """Leave the current voice channel"""
-        if ctx.voice_client:
-            await ctx.voice_client.disconnect()
+        if self.voice_channels[ctx.message.guild.id]:
+            await self.voice_channels[ctx.message.guild.id].disconnect()
+
+        if os.path.isdir("data/audio"):
+            for file in os.listdir("data/audio"):
+                os.remove(f"data/audio/{file}")
+
+    def queue(self, guild_id, queue_place):
+        """Plays the next audio track on the queue"""
+        if queue_place < len(self.voice_queues[guild_id]):
+            self.voice_channels[guild_id].play(
+                discord.FFmpegPCMAudio(
+                    f"data/audio/{self.voice_queues[guild_id][queue_place]['title']}.mp3"
+                ),
+                after=lambda e: self.queue(guild_id, queue_place + 1),
+            )
 
 
 def setup(bot):

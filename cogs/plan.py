@@ -15,6 +15,8 @@ class Plan(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+        os.makedirs("data/plan", exist_ok=True)
+
     @commands.command()
     async def plan(self, ctx):
         """Display the lesson plan for given group"""
@@ -22,9 +24,9 @@ class Plan(commands.Cog):
         embed = discord.Embed()
         for role in ctx.message.author.roles:
             if role.name == "Informatyka":
-                if os.path.isfile("data/informatyka.png"):
+                if os.path.isfile("data/plan/informatyka.png"):
                     file = discord.File(
-                        "data/informatyka.png", filename="informatyka.png"
+                        "data/plan/informatyka.png", filename="informatyka.png"
                     )
                     embed.set_image(url="attachment://informatyka.png")
                 else:
@@ -34,9 +36,9 @@ class Plan(commands.Cog):
                     return
                 break
             elif role.name == "Automatyka":
-                if os.path.isfile("data/automatyka.png"):
+                if os.path.isfile("data/plan/automatyka.png"):
                     file = discord.File(
-                        "data/automatyka.png", filename="automatyka.png"
+                        "data/plan/automatyka.png", filename="automatyka.png"
                     )
                     embed.set_image(url="attachment://automatyka.png")
                 else:
@@ -68,7 +70,7 @@ class Plan(commands.Cog):
             await ctx.send("Podana wartość nie jest linkiem!")
             return
 
-        urllib.request.urlretrieve(link, f"data/{group}.png")
+        urllib.request.urlretrieve(link, f"data/plan/{group}.png")
         await ctx.send("Nowy plan ustawiony!")
 
 

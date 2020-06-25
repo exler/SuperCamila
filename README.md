@@ -1,5 +1,5 @@
-# CamilaBot
-🤦‍♀️ Calendar and task management Discord bot
+# SuperCamila
+🎓 Extensible Discord bot with premade modules for students.
 
 ## Requirements
 * Python 3.8

@@ -1,5 +1,6 @@
 import os
 
+import discord
 import youtube_dl
 import urllib.parse
 
@@ -15,9 +16,9 @@ def url_validator(url: str) -> bool:
         return False
 
 
-def youtube_download(url) -> str:
+def youtube_download(query) -> dict:
     """Downloads a given URL from YouTube using youtube-dl.
-       Returns download filename if success, otherwise None"""
+       Returns dict if success, otherwise None"""
     ytdl_opts = {
         "quiet": "True",
         "format": "bestaudio/best",
@@ -28,22 +29,21 @@ def youtube_download(url) -> str:
                 "preferredquality": "192",
             }
         ],
-        # "outtmpl": os.path.join(
-        #    os.path.abspath(os.getcwd()), "data", "%(title)s.%(ext).s"
-        # ),
+        "outtmpl": os.path.join(
+            os.path.abspath(os.getcwd()), "data", "audio", "%(title)s.%(ext)s"
+        ),
     }
 
     with youtube_dl.YoutubeDL(ytdl_opts) as ytdl:
-        log.debug(f"Starting audio download from YouTube, url: {url}")
-        ytdl.download([url])
+        if url_validator(query):
+            result = ytdl.extract_info(query)
+        else:
+            result = ytdl.extract_info(f"ytsearch:{query}")["entries"][0]
+        title = result.get("title", None)
+        duration = result.get("duration", None)
+        # log.debug(f"Downloading YouTube audio, title: {title}")
 
-    for file in os.listdir(os.getcwd()):
-        if file.endswith(".mp3"):
-            name = file
-            log.debug(
-                f"Renaming and moving file: `{os.path.join(os.getcwd(), file)}` -> `data/audio.mp3`"
-            )
-            os.rename(file, "data/audio.mp3")
-            return name
+    if not title:
+        return None
 
-    return None
+    return {"title": title, "duration": duration}
