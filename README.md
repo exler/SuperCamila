@@ -31,12 +31,16 @@ $ docker-compose up -d
 Miscellaneous:
   format       Format message of given ID with given syntax.
 Music:
-  join         Join the room occupied by the person invoking the command
-  leave        Leave the current voice channel
-  pause        Pause the current playing video
-  play         Play music from a YouTube video
-  skip         Skip the current playing video
-  unpause      Unpause the currently paused video
+  join         Make the bot join your channel
+  leave        Clears the queue and makes the bot leave the voice channel
+  now          Displays the currently playing song
+  pause        Pauses the currently playing song
+  play         Plays a song.
+  queue        Shows the player's queue.
+  remove       Removes a song from the queue at a given index
+  resume       Resumes the currently paused song
+  skip         Skips the currently playing song
+  volume       Sets the volume of the player
 Plan:
   changeplan   Change the lesson plan for a given group with attached image
   plan         Display the lesson plan for the group represented by user's role
