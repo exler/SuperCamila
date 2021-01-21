@@ -23,9 +23,12 @@ class Plan(commands.Cog):
         file = None
         embed = discord.Embed()
         for role in ctx.message.author.roles:
-            if os.path.isfile(f"data/plan/{role}.png"):
-                file = discord.File(f"data/plan/{role}.png", filename=f"{role}.png")
-                embed.set_image(url=f"attachment://{role}.png")
+            role_name = str(role).lower()
+            if os.path.isfile(f"data/plan/{role_name}.png"):
+                file = discord.File(
+                    f"data/plan/{role_name}.png", filename=f"{role_name}.png"
+                )
+                embed.set_image(url=f"attachment://{role_name}.png")
                 break
 
         if not file:
@@ -40,7 +43,6 @@ class Plan(commands.Cog):
         """Change the lesson plan for a given group with attached image"""
         async with ctx.typing():
             group = group.lower()
-            print(ctx.guild.roles)
             if group not in [str(role).lower() for role in ctx.guild.roles]:
                 await ctx.send("Wybrana grupa nie istnieje na serwerze!")
                 return
@@ -55,7 +57,7 @@ class Plan(commands.Cog):
 
                 with open(Path("data", "plan", f"{group}.png"), "wb") as handler:
                     handler.write(img_data)
-                    logging.info(f"Downloaded {plan_image.url} as {group} plan")
+                    logging.info(f"Downloaded `{plan_image.url}` as `{group}.png`")
             else:
                 await ctx.send("Załącznik nie jest zdjęciem!")
                 return
